@@ -1,0 +1,10 @@
+models/
+data/
+logs/
+.ipynb_checkpoints/
+.venv/
+notes.md
+__pycache__
+.vscode
+run_p1.sh
+directory_structure.txt

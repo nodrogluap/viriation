@@ -1,0 +1,141 @@
+<!-- app/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papers</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script>
+        // Function to set the base URL dynamically
+        function setBaseURL() {
+        // Get the full current URL (the base URL of your application)
+        const origin = window.location.origin;
+        console.log("Origin: ", origin)
+        const path = window.location.pathname.split('/').slice(0, -1).join('/'); // Extract path excluding the last segment
+        console.log("Path: ", path)
+
+        const fullBaseURL = origin + path;
+
+        // Find the link element
+        const links = document.getElementsByClassName('annotation');
+
+        // Set the full URL by appending the base URL to the href value
+        // Convert HTMLCollection to an array (optional but helpful in modern JS)
+        Array.from(links).forEach(link => {
+            const originalHref = link.getAttribute('href');  // Get the existing href
+            
+            if (originalHref) {
+                // Combine base URL with the original href
+                link.setAttribute('href', fullBaseURL + originalHref);
+                console.log("Updated href:", link.getAttribute('href'));
+            } 
+            else {
+                console.error("No href found for this link:", link);
+            }
+        });
+        }
+    
+        // Execute the function once the page is loaded
+        window.onload = setBaseURL;
+
+    </script>
+
+    <style>
+        .container {
+            width: 95%;
+            margin: auto;
+            background-color: white;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        p {
+            font-size: medium;
+        }
+
+        /* Title block */
+        .header {
+            text-align: center;
+        }
+
+        .body {
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        /* Page title  */
+        h1 {
+            font-weight: bolder;
+        }
+
+        .container h2 {
+            padding-top: 10px;
+            padding-bottom: 0px;
+            margin-top: 20px;
+            margin-bottom: 0px;
+            font-size: x-large;
+        }
+
+        .paper {
+            flex-basis: 48%; /* adjust the width of each item */
+            background-color: #f2f4f4;
+            cursor: pointer;
+            padding: 18px;
+            width: 50%;
+            border: #5A5A66 ;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            margin: 15px;
+            border-radius: 15px;
+            box-shadow: 5px 10px #ccd1d1;
+            transition: all .2s ease-in-out;
+        }
+
+        /* Collapsible will change color when hovered */
+        .paper:hover {
+            transform: scale(1.05);
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap:1rem
+        }
+
+        .buttons a:hover{
+            color: #A4C2A8;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>Viriation</h1>
+            <p><b>{{info|length}}</b> new paper(s) discussing SARS-CoV-2 variants were detected. Please annotate the mutations mentioned in these papers.</p>
+        </div>
+        <div class="body">
+            {% for key, row in info.iterrows() %}
+                <div class="paper">                    
+                    <h2 style="text-align: center;">{{loop.index}}. <b>{{row["title"]}}</b></h2>
+                    <p style="text-align: center;">
+                        <br>
+                        Publication date: <b>{{row["date"]}}</b> <br>
+                        By: {{row["authors"]}} et al.<br>
+                    </p>
+                    <div class="buttons">
+                        <a href="https://doi.org/{{ row['doi'] }}">View paper <i class="glyphicon glyphicon-new-window"></i></a>
+                        <a class="annotation" href="{{ url_for('paper', doi_id=row['doi_id']) }}">Annotate mutations <i class="glyphicon glyphicon-edit"></i></a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
