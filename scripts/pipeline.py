@@ -442,7 +442,7 @@ def NER(flagged, port):
         for text in group["text"]:
             NER = query_plain(text, url = port)
             NER_list.append(NER)
-        file_name = "../../data/pipeline_data/NER/" + str(doi_name) + "_paper.pkl"
+        file_name = "../data/pipeline_data/NER/" + str(doi_name) + "_paper.pkl"
         with open(file_name, 'wb') as f:
             pickle.dump(NER_list, f)
 
@@ -528,17 +528,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Load data
-    df = pd.read_csv('../../data/pipeline_data/paper_flagging_data/bert_dataset.csv')
+    df = pd.read_csv('../data/pipeline_data/paper_flagging_data/bert_dataset.csv')
     ds = ds_preparation(df, val_count=128)
     
     # Load model
     def model_init():
-        return AutoModelForSequenceClassification.from_pretrained("../../models/chunks-pubmed-bert-v2", num_labels=2)
+        return AutoModelForSequenceClassification.from_pretrained("../models/chunks-pubmed-bert-v2", num_labels=2)
     
     trainer = fine_tune_model(ds, model_init, train=False)
 
     # Load lightbgm model
-    bst = lgb.Booster(model_file='../../models/lightgbm_model.txt')
+    bst = lgb.Booster(model_file='../models/lightgbm_model.txt')
 
     # Load new papers
     data = pd.read_csv(args.data)
@@ -553,9 +553,7 @@ if __name__ == "__main__":
     # Add papers that have been screened as irrelevant    
     for doi in data["doi"].tolist():
         if doi not in flagged_papers:
-            h.addPaper(doi)
-
-    h.updatePapers(irrelevant_papers = irrelevant)
+            h.addPaper(doi, relevance=False)
 
     with open('../data/database/history.pkl', 'wb') as f:
         dill.dump(h, f)
