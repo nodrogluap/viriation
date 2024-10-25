@@ -49,6 +49,32 @@ python -c "import torch;print(torch.cuda.is_available())"
 cd submodules/BERN2
 pip install -r requirements.txt
 ```
+
+In order to run BERN2, you will also need to run:
+```
+wget http://nlp.dmis.korea.edu/projects/bern2-sung-et-al-2022/resources_v1.1.b.tar.gz
+tar -zxvf resources_v1.1.b.tar.gz
+md5sum resources_v1.1.b.tar.gz
+# make sure the md5sum is 'c0db4e303d1ccf6bf56b42eda2fe05d0'
+rm -rf resources_v1.1.b.tar.gz
+
+# (For Linux Users) install CRF 
+cd resources/GNormPlusJava
+tar -zxvf CRF++-0.58.tar.gz
+mv CRF++-0.58 CRF
+cd CRF
+./configure --prefix="$HOME"
+make
+make install
+cd ../../..
+
+# (For Windows Users) install CRF 
+cd resources/GNormPlusJava
+unzip -zxvf CRF++-0.58.zip
+mv CRF++-0.58 CRF
+cd ../..
+```
+
 ### Auto-Corpus environment
 ```
 conda create -n autocorpus python=3.8.19
